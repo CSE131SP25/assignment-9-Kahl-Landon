@@ -1,6 +1,10 @@
 package assignment9;
 
+import java.awt.Color;
 import java.util.LinkedList;
+import java.util.List;
+
+import edu.princeton.cs.introcs.StdDraw;
 
 public class Snake {
 
@@ -9,11 +13,13 @@ public class Snake {
 	private LinkedList<BodySegment> segments;
 	private double deltaX;
 	private double deltaY;
+	private int score;
 	
 	public Snake() {
-		//FIXME - set up the segments instance variable
 		deltaX = 0;
 		deltaY = 0;
+		this.segments = new LinkedList<>();
+		segments.add(new BodySegment(0.5, 0.5, SEGMENT_SIZE));
 	}
 	
 	public void changeDirection(int direction) {
@@ -37,14 +43,34 @@ public class Snake {
 	 * based on the current direction of travel
 	 */
 	public void move() {
-		//FIXME
+		double headXPosition = segments.get(0).getX();
+		double headYPosition = segments.get(0).getY();
+		
+		segments.get(0).setX(headXPosition + deltaX);
+		segments.get(0).setY(headYPosition + deltaY);
+		
+		for (int i = 1; i < segments.size(); i++) {
+			BodySegment seg = segments.get(i); // Get the element at index
+			
+			double currentX = seg.getX();
+			double currentY = seg.getY();
+			
+			seg.setX(headXPosition);
+			seg.setY(headYPosition);
+			
+			headXPosition = currentX;
+			headYPosition = currentY;
+		}
 	}
 	
 	/**
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
-		//FIXME
+		for (BodySegment element : segments) {
+			element.draw();
+		}
+		
 	}
 	
 	/**
@@ -53,8 +79,18 @@ public class Snake {
 	 * @return true if the snake successfully ate the food
 	 */
 	public boolean eatFood(Food f) {
-		//FIXME
-		return false;
+		double distance = Math.sqrt(Math.pow(segments.get(0).getX()-f.getX(), 2) + Math.pow(segments.get(0).getY()-f.getY(), 2));
+		
+		if (distance <= 2*SEGMENT_SIZE) {
+			segments.add(new BodySegment(segments.get(0).getX(), segments.get(0).getY()-(2*SEGMENT_SIZE), SEGMENT_SIZE));
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+		
+		
 	}
 	
 	/**
@@ -62,7 +98,13 @@ public class Snake {
 	 * @return whether or not the head is in the bounds of the window
 	 */
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+		double positionX = segments.get(0).getX();
+		double positionY = segments.get(0).getY();
+		if ((positionX < 1) && (positionX > 0) && (positionY < 1) && (positionY > 0)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
